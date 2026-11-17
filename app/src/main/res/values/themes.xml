@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ResaverAndroid" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/suite_background</item>
+        <item name="android:statusBarColor">@color/suite_background</item>
+        <item name="android:navigationBarColor">@color/suite_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

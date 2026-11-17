@@ -1,0 +1,5 @@
+-dontwarn org.mozilla.universalchardet.**
+-dontwarn j2html.**
+-dontwarn net.jpountz.**
+-keep class resaver.** { *; }
+-keep class mf.** { *; }
