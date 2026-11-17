@@ -1,4 +1,4 @@
-package com.resaver.android
+package com.skyrimandroid.resaver
 
 import resaver.ess.ESS
 import resaver.ess.ModelBuilder

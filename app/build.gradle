@@ -14,16 +14,16 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace 'com.resaver.android'
+    namespace 'com.skyrimandroid.resaver'
     compileSdk 34
 
     defaultConfig {
-        applicationId 'com.resaver.android'
+        applicationId 'com.skyrimandroid.resaver'
         // java.nio.file is required by the ported savefile parser.
         minSdk 26
         targetSdk 34
-        versionCode 1
-        versionName '0.1.0'
+        versionCode 2
+        versionName '0.1.1'
     }
 
     signingConfigs {

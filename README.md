@@ -1,4 +1,4 @@
-# Skyrim ReSaver (Android)
+# ReSaver (Android)
 
 An Android port of [ReSaver / FallrimTools](https://www.nexusmods.com/skyrimspecialedition/mods/5031) for cleaning Skyrim Legendary Edition save files on device. Built for static Skyrim LE Android ports, where the usual desktop workflow means copying a save off the phone, cleaning it on a PC and copying it back.
 
@@ -26,6 +26,18 @@ The parser and cleaner are the original Java implementation from ReSaver 6.0.643
 - A Skyrim LE Android port that keeps its saves on shared storage, for example `Documents/My Games/Skyrim/Saves` inside the port directory.
 
 ## Usage
+
+The app has no launcher icon. It is started by the Skyrim Mod Loader plugin list (or any other tool that knows its component), which keeps the Android app drawer free of yet another Skyrim entry.
+
+For other launchers, start it explicitly:
+
+```
+am start -n com.skyrimandroid.resaver/.MainActivity
+# or
+am start -a com.skyrimandroid.resaver.action.OPEN -p com.skyrimandroid.resaver
+```
+
+In the app:
 
 1. Open the gear button, pick your saves folder with the system folder picker, or paste the path manually.
 2. Select a save from the dropdown. The summary, contents and cleanup counts are read from the file.
@@ -58,11 +70,18 @@ The Compose components come from the vendored `skyrim-suite-ui` sources in `suit
 ## Layout
 
 - `app/src/main/java/resaver/` – vendored ReSaver core (save parser/writer, Papyrus model, PEX/ESP readers), patched for Android.
-- `app/src/main/java/com/resaver/android/` – Kotlin facade (`SaveEngine`) and the Compose UI.
+- `app/src/main/java/com/skyrimandroid/resaver/` – Kotlin facade (`SaveEngine`) and the Compose UI.
+- `app/src/main/java/mf/` – small helpers that came with the vendored core.
 - `app/libs/` – upstream runtime dependencies (LZ4, j2html, juniversalchardet).
+
+## Integration
+
+- Package: `com.skyrimandroid.resaver`
+- Activity: `com.skyrimandroid.resaver.MainActivity` (exported, no launcher entry)
+- Custom action: `com.skyrimandroid.resaver.action.OPEN`
 
 ## Credits
 
-Skyrim ReSaver is a port of ReSaver by Mark Fairchild (FallrimTools), used under the Apache License 2.0. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the full list.
+ReSaver for Android is a port of ReSaver by Mark Fairchild (FallrimTools), used under the Apache License 2.0. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the full list.
 
 This is an unofficial fan tool. Skyrim and its assets belong to Bethesda Softworks.

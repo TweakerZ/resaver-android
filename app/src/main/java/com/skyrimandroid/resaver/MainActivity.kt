@@ -1,4 +1,4 @@
-package com.resaver.android
+package com.skyrimandroid.resaver
 
 import android.Manifest
 import android.content.pm.PackageManager

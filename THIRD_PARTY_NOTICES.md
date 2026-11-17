@@ -1,6 +1,6 @@
 # Third-party notices
 
-Skyrim ReSaver bundles or derives from the following projects. Full license texts
+ReSaver for Android bundles or derives from the following projects. Full license texts
 are available at the linked URLs.
 
 ## ReSaver / FallrimTools

@@ -1,4 +1,4 @@
-package com.resaver.android
+package com.skyrimandroid.resaver
 
 import android.app.Activity
 import android.content.Context

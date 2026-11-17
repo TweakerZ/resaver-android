@@ -1,4 +1,4 @@
-package com.resaver.android
+package com.skyrimandroid.resaver
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable

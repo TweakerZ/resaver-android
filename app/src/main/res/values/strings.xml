@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Skyrim ReSaver</string>
+    <string name="app_name">ReSaver</string>
     <string name="status_ready">Pick a save folder to begin.</string>
 </resources>

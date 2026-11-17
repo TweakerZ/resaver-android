@@ -1,4 +1,4 @@
-package com.resaver.android
+package com.skyrimandroid.resaver
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -81,7 +81,7 @@ fun ResaverScreen(
     }
 
     SuiteScreen(
-        title = "Skyrim ReSaver",
+        title = "ReSaver",
         subtitle = summary?.fileName ?: "Skyrim save cleaner",
         chips = chips,
         onSettings = onOpenSettings,
@@ -172,7 +172,7 @@ fun ResaverScreen(
                         color = MaterialTheme.colorScheme.onErrorContainer
                     )
                     Text(
-                        text = "Skyrim ReSaver will not write it back, because rewriting a damaged file can lose data. " +
+                        text = "ReSaver will not write it back, because rewriting a damaged file can lose data. " +
                             "Try a different save slot.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onErrorContainer
