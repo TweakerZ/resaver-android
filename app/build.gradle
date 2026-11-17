@@ -22,7 +22,7 @@ android {
         // java.nio.file is required by the ported savefile parser.
         minSdk 26
         targetSdk 34
-        versionCode 2
+        versionCode 3
         versionName '0.1.1'
     }
 

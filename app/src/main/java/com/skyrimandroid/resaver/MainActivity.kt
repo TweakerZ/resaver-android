@@ -15,6 +15,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.skyrimsuite.ui.theme.SkyrimSuiteTheme
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +47,11 @@ class MainActivity : AppCompatActivity() {
     private var statusText by mutableStateOf("")
     private var logText by mutableStateOf("")
     private var saveBroken by mutableStateOf(false)
+
+    // System bar insets of the activity window. The settings sheet runs in its
+    // own dialog window, which does not see these, so they are forwarded to it.
+    private var systemTopInsetPx by mutableStateOf(0)
+    private var systemBottomInsetPx by mutableStateOf(0)
 
     private var loaded: SaveFile? = null
     private var pendingPick = false
@@ -78,6 +85,7 @@ class MainActivity : AppCompatActivity() {
         statusText = getString(R.string.status_ready)
 
         maybeRequestLegacyPermission()
+        trackSystemInsets()
 
         setContent {
             SkyrimSuiteTheme {
@@ -129,6 +137,8 @@ class MainActivity : AppCompatActivity() {
                 ResaverSheets(
                     showSettings = showSettings,
                     savesFolderPath = savesFolderPath,
+                    topInsetPx = systemTopInsetPx,
+                    bottomInsetPx = systemBottomInsetPx,
                     onChangeFolder = {
                         showSettings = false
                         pendingPick = true
@@ -165,6 +175,20 @@ class MainActivity : AppCompatActivity() {
         storageGranted = StoragePaths.hasAllFilesAccess(this)
         if (storageGranted && savesFolderPath != null && saveFiles.isEmpty()) {
             scanSaves()
+        }
+    }
+
+    /**
+     * The settings sheet is a dialog window and does not inherit the activity's
+     * system bar insets, so keep a copy here for it to pad against.
+     */
+    private fun trackSystemInsets() {
+        val decor = window.decorView
+        decor.viewTreeObserver.addOnGlobalLayoutListener {
+            val insets = ViewCompat.getRootWindowInsets(decor) ?: return@addOnGlobalLayoutListener
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            if (bars.top != systemTopInsetPx) systemTopInsetPx = bars.top
+            if (bars.bottom != systemBottomInsetPx) systemBottomInsetPx = bars.bottom
         }
     }
 

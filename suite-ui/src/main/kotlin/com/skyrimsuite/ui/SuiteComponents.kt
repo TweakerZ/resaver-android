@@ -62,6 +62,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.skyrimsuite.ui.theme.SuiteMonoTextStyle
 
@@ -454,14 +455,20 @@ fun SuiteSettingsSheet(
     visible: Boolean,
     onDismiss: () -> Unit,
     title: String = "Advanced settings",
+    topInset: Dp = 0.dp,
+    bottomInset: Dp = 0.dp,
     content: @Composable ColumnScope.() -> Unit
 ) {
     if (!visible) return
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
+    // The sheet lives in its own dialog window, which does not receive the
+    // activity's system bar insets, so a tall sheet would otherwise draw its
+    // header under the status bar and its last row under the navigation bar.
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        modifier = Modifier.padding(top = topInset),
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         dragHandle = {
             Box(
@@ -480,7 +487,7 @@ fun SuiteSettingsSheet(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp),
+                .padding(bottom = 32.dp + bottomInset),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Text(
