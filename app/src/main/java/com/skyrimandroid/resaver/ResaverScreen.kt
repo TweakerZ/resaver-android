@@ -17,7 +17,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -272,20 +271,15 @@ private fun CleanupCard(
 fun ResaverSheets(
     showSettings: Boolean,
     savesFolderPath: String?,
-    topInsetPx: Int,
-    bottomInsetPx: Int,
     onChangeFolder: () -> Unit,
     onManualPath: () -> Unit,
     onDismiss: () -> Unit,
     onRescan: () -> Unit
 ) {
-    val density = LocalDensity.current
     SuiteSettingsSheet(
         visible = showSettings,
         onDismiss = onDismiss,
-        title = "Advanced settings",
-        topInset = with(density) { topInsetPx.toDp() },
-        bottomInset = with(density) { bottomInsetPx.toDp() }
+        title = "Advanced settings"
     ) {
         SuitePathRow(
             title = "Saves folder",

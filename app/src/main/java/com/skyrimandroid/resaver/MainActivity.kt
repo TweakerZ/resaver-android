@@ -5,19 +5,16 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.InputType
-import android.widget.EditText
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.skyrimsuite.ui.SuiteAlertDialog
+import com.skyrimsuite.ui.SuiteTextInputDialog
 import com.skyrimsuite.ui.theme.SkyrimSuiteTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,10 +45,9 @@ class MainActivity : AppCompatActivity() {
     private var logText by mutableStateOf("")
     private var saveBroken by mutableStateOf(false)
 
-    // System bar insets of the activity window. The settings sheet runs in its
-    // own dialog window, which does not see these, so they are forwarded to it.
-    private var systemTopInsetPx by mutableStateOf(0)
-    private var systemBottomInsetPx by mutableStateOf(0)
+    private var manualPathDialog by mutableStateOf(false)
+    private var cleanPromptSave by mutableStateOf<SaveFile?>(null)
+    private var cleanPromptBody by mutableStateOf("")
 
     private var loaded: SaveFile? = null
     private var pendingPick = false
@@ -85,7 +81,6 @@ class MainActivity : AppCompatActivity() {
         statusText = getString(R.string.status_ready)
 
         maybeRequestLegacyPermission()
-        trackSystemInsets()
 
         setContent {
             SkyrimSuiteTheme {
@@ -137,8 +132,6 @@ class MainActivity : AppCompatActivity() {
                 ResaverSheets(
                     showSettings = showSettings,
                     savesFolderPath = savesFolderPath,
-                    topInsetPx = systemTopInsetPx,
-                    bottomInsetPx = systemBottomInsetPx,
                     onChangeFolder = {
                         showSettings = false
                         pendingPick = true
@@ -154,6 +147,37 @@ class MainActivity : AppCompatActivity() {
                         scanSaves()
                     }
                 )
+
+                if (manualPathDialog) {
+                    SuiteTextInputDialog(
+                        title = "Saves folder",
+                        body = "The system picker could not resolve a filesystem path. Enter the folder that holds your .ess saves.",
+                        initialValue = savesFolderPath.orEmpty(),
+                        hint = "/storage/emulated/0/Skyrim/Saves",
+                        confirmLabel = "Use path",
+                        dismissLabel = "Cancel",
+                        onConfirm = { path ->
+                            manualPathDialog = false
+                            if (path.isNotEmpty()) applySavesFolder(path)
+                        },
+                        onDismiss = { manualPathDialog = false }
+                    )
+                }
+
+                cleanPromptSave?.let { save ->
+                    SuiteAlertDialog(
+                        title = "Clean and save?",
+                        body = cleanPromptBody,
+                        confirmLabel = "Clean and save",
+                        dismissLabel = "Cancel",
+                        destructive = true,
+                        onConfirm = {
+                            cleanPromptSave = null
+                            cleanAndSave(save)
+                        },
+                        onDismiss = { cleanPromptSave = null }
+                    )
+                }
             }
         }
 
@@ -175,20 +199,6 @@ class MainActivity : AppCompatActivity() {
         storageGranted = StoragePaths.hasAllFilesAccess(this)
         if (storageGranted && savesFolderPath != null && saveFiles.isEmpty()) {
             scanSaves()
-        }
-    }
-
-    /**
-     * The settings sheet is a dialog window and does not inherit the activity's
-     * system bar insets, so keep a copy here for it to pad against.
-     */
-    private fun trackSystemInsets() {
-        val decor = window.decorView
-        decor.viewTreeObserver.addOnGlobalLayoutListener {
-            val insets = ViewCompat.getRootWindowInsets(decor) ?: return@addOnGlobalLayoutListener
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            if (bars.top != systemTopInsetPx) systemTopInsetPx = bars.top
-            if (bars.bottom != systemBottomInsetPx) systemBottomInsetPx = bars.bottom
         }
     }
 
@@ -216,20 +226,7 @@ class MainActivity : AppCompatActivity() {
     /* --------------------------------------------------------------------- */
 
     private fun promptForManualPath() {
-        val input = EditText(this).apply {
-            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_URI
-            hint = "/storage/emulated/0/Skyrim/Saves"
-        }
-        AlertDialog.Builder(this)
-            .setTitle("Saves folder")
-            .setMessage("The system picker could not resolve a filesystem path. Enter the folder that holds your .ess saves.")
-            .setView(input)
-            .setPositiveButton("Use path") { _, _ ->
-                val path = input.text?.toString()?.trim().orEmpty()
-                if (path.isNotEmpty()) applySavesFolder(path)
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+        manualPathDialog = true
     }
 
     private fun applySavesFolder(path: String) {
@@ -351,16 +348,11 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        AlertDialog.Builder(this)
-            .setTitle("Clean and save?")
-            .setMessage(
-                "The save is rewritten in place after a timestamped backup is made.\n\n" +
-                    "Will clean:\n• " + steps.joinToString("\n• ") +
-                    "\n\nClose Skyrim before writing the save."
-            )
-            .setPositiveButton("Clean and save") { _, _ -> cleanAndSave(save) }
-            .setNegativeButton("Cancel", null)
-            .show()
+        cleanPromptBody =
+            "The save is rewritten in place after a timestamped backup is made.\n\n" +
+                "Will clean:\n• " + steps.joinToString("\n• ") +
+                "\n\nClose Skyrim before writing the save."
+        cleanPromptSave = save
     }
 
     private fun cleanAndSave(save: SaveFile) {
