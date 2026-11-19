@@ -27,7 +27,7 @@ The parser and cleaner are the original Java implementation from ReSaver 6.0.643
 
 ## Usage
 
-The app has no launcher icon. It is started by the Skyrim Mod Loader plugin list (or any other tool that knows its component), which keeps the Android app drawer free of yet another Skyrim entry.
+The `iconless` build has no launcher icon. It is started by the Skyrim Mod Loader plugin list (or any other tool that knows its component), which keeps the Android app drawer free of yet another Skyrim entry. The `launcher` build adds a normal drawer icon for direct use.
 
 For other launchers, start it explicitly:
 
@@ -51,8 +51,17 @@ Cleaning is destructive to stale data by design. Keep a copy of any save you car
 Requires JDK 17 and an Android SDK with build-tools 35.
 
 ```bash
-./gradlew :app:assembleRelease
+./gradlew :app:assembleRelease   # both flavors
 ```
+
+Two flavors exist, same applicationId, versionCode and signing key, so either installs over the other:
+
+| Flavor | APK | Drawer entry |
+| --- | --- | --- |
+| `iconless` | `app-iconless-release.apk` | no, started by Skyrim Mod Loader |
+| `launcher` | `app-launcher-release.apk` | yes |
+
+Build them individually with `:app:assembleIconlessRelease` or `:app:assembleLauncherRelease`.
 
 Release signing reads `keystore.properties` from the project root:
 
@@ -77,8 +86,9 @@ The Compose components come from the vendored `skyrim-suite-ui` sources in `suit
 ## Integration
 
 - Package: `com.skyrimandroid.resaver`
-- Activity: `com.skyrimandroid.resaver.MainActivity` (exported, no launcher entry)
+- Activity: `com.skyrimandroid.resaver.MainActivity` (exported)
 - Custom action: `com.skyrimandroid.resaver.action.OPEN`
+- The `iconless` flavor has no drawer entry; the `launcher` flavor adds one. Both keep the activity exported for Skyrim Mod Loader.
 
 ## Credits
 

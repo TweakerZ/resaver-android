@@ -26,6 +26,20 @@ android {
         versionName '0.1.2'
     }
 
+    // Two builds of the same app. `iconless` has no drawer entry and is started
+    // from the Skyrim Mod Loader plugin list; `launcher` adds the launcher icon
+    // for users who want to open it directly. Same applicationId and version,
+    // so either one installs over the other.
+    flavorDimensions += 'entry'
+    productFlavors {
+        iconless {
+            dimension 'entry'
+        }
+        launcher {
+            dimension 'entry'
+        }
+    }
+
     signingConfigs {
         if (keystorePropertiesFile.exists()) {
             release {
